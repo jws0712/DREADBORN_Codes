@@ -42,6 +42,7 @@ namespace DREADBORN
                         MeleeWeaponAttack();
                         break;
                     }
+                //추후 다른 타입의 무기 추가
 
             }
         }
@@ -91,17 +92,24 @@ namespace DREADBORN
         private void LightAttackCombo()
         {
             manager.canCombo = false;
-            if (lastAttack == Light_Attack1)
+
+            switch(lastAttack)
             {
-                Attack(Light_Attack2);
-            }
-            else if (lastAttack == Light_Attack2)
-            {
-                Attack(Light_Attack3);
-            }
-            else if (lastAttack == Light_Attack3)
-            {
-                Attack(Light_Attack1);
+                case Light_Attack1:
+                    {
+                        Attack(Light_Attack2);
+                        break;
+                    }
+                case Light_Attack2:
+                    {
+                        Attack(Light_Attack3);
+                        break;
+                    }
+                case Light_Attack3:
+                    {
+                        Attack(Light_Attack1);
+                        break;
+                    }
             }
         }
 
