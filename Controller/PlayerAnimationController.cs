@@ -59,35 +59,23 @@ namespace DREADBORN
             manager.ThirdPersonAnim.SetBool(animIsDefendID, manager.Input.IsPressDefend);
         }
 
-        public void SetTriggerAnimation(string parameterName)
-        {
-            manager.ThirdPersonAnim.SetTrigger(parameterName);
-        }
-
         [PunRPC]
-        //애니매이션을 실행 동기화
-        public void TriggerAnimation(string targetAnimation, bool isAction, bool isRootMotion = false)
+        //애니매이션 실행
+        public void PlayAnimation(string targetAnimation, bool isAction, bool isRootMotion = false)
         {
             if (manager == null) return;
+
             manager.ThirdPersonAnim.applyRootMotion = isRootMotion;
 
             manager.ThirdPersonAnim.CrossFade(targetAnimation, trasitionDuration);
 
             manager.isAction = isAction;
-        }
 
-        //애니매이션 실행
-        public void PlayAnimation(string targetAnimation, bool isAction, bool isRootMotion = false)
-        {
-            if(PhotonNetwork.IsConnected)
+            if (PhotonNetwork.IsConnected)
             {
-                manager.photonView.RPC("TriggerAnimation", RpcTarget.All, targetAnimation, isAction, isRootMotion);
-            }
-            else
-            {
-                TriggerAnimation(targetAnimation, isAction, isRootMotion);
+                if(manager.photonView.IsMine)
+                manager.photonView.RPC("PlayAnimation", RpcTarget.Others, targetAnimation, isAction, isRootMotion);
             }
         }
-        
     }
 }

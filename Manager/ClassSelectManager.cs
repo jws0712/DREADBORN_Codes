@@ -22,7 +22,6 @@ namespace DREADBORN
         [SerializeField] private Button knightButton = null;
         [SerializeField] private Button vanguardButton = null;
         [SerializeField] private Button selectButton = null;
-        [SerializeField] private Camera classSelectCamera = null;
         [SerializeField] private Canvas classSelectCanvas = null;
 
         private string selectedClass = null;
@@ -64,8 +63,7 @@ namespace DREADBORN
         //클래스 선택 확정
         private void Select(string className)
         {
-            //클래스 선택 카메라 및 UI를 보이지 않게함
-            classSelectCamera.gameObject.SetActive(false);
+            //클래스 선택를 보이지 않게함
             classSelectCanvas.gameObject.SetActive(false);
 
             //선택한 클래스의 이름을 GameManager에 넘겨주고 선택한 클래스의 모델을 게임월드에 소환시킴

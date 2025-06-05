@@ -7,9 +7,6 @@ namespace DREADBORN
     //UnityEngine
     using UnityEngine;
 
-    //Photon
-    using Photon.Pun;
-
     public class ObjectPoolManager : Singleton<ObjectPoolManager>
     {
         [SerializeField] protected PoolObjectData[] poolObjectDataArray = null;
@@ -58,20 +55,6 @@ namespace DREADBORN
 
         //오브젝트 소환을 요청함
         public void SpawnPoolObject(string objectName, Vector3 position, Quaternion rotaion, float size = 1.0f)
-        {
-            if(PhotonNetwork.IsConnected)
-            {
-                photonView.RPC("SpawnObjectFromPool", RpcTarget.All, objectName, position, rotaion, size);
-            }
-            else
-            {
-                SpawnObjectFromPool(objectName, position, rotaion, size);
-            }
-        }
-
-        //오브젝트를 풀에서 가져옴
-        [PunRPC]
-        public void SpawnObjectFromPool(string objectName, Vector3 position, Quaternion rotaion, float size = 1.0f)
         {
             if (poolObjectDataDictionary[objectName].Count > 0)
             {

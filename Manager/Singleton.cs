@@ -4,7 +4,7 @@ namespace DREADBORN
     //UnityEngine
     using UnityEngine;
 
-    public class Singleton<T> : MonoBehaviourPunCallbacks where T : Component
+    public class Singleton<T> : MonoBehaviour where T : Component
     {
         private static T instance;
         

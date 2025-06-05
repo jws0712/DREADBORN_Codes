@@ -26,6 +26,8 @@ namespace DREADBORN
 
         private void LateUpdate()
         {
+            if (manager.isPause) return;
+
             //카메라의 각도를 마우스에 맞춰 변경시킴
             mouseY += manager.Input.LookVec.x * sensitivity;
 

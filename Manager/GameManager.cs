@@ -6,33 +6,31 @@ namespace DREADBORN
 
     //UnityEngine
     using UnityEngine;
+    using UnityEngine.SceneManagement;
 
     //Photon
     using Photon.Pun;
+
+    //Project
+    using static SceneName;
 
     public class GameManager : Singleton<GameManager>
     {
         private Transform spawnTransform = null;
         private string selectClass = null;
 
+        public bool isOnline = default;
+
         //초기화
         public override void Awake()
         {
             base.Awake();
+
             PhotonNetwork.SendRate = 60;
             PhotonNetwork.SerializationRate = 30;
-        }
 
-        //모든 플레이어의 씬 이동 여부를 설정함
-        [PunRPC]
-        public void SetAutomaticallySyncScene(bool trigger)
-        {
-            PhotonNetwork.AutomaticallySyncScene = trigger;
-
-            if(PhotonNetwork.IsMasterClient)
-            {
-                photonView.RPC("SetAutomaticallySyncScene", RpcTarget.Others, trigger);
-            }
+            //모든 플레이어가 씬을 같이 넘어가게 함
+            PhotonNetwork.AutomaticallySyncScene = true;
         }
 
         //선택된 클래스의 이름을 받아옴

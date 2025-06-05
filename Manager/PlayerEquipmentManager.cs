@@ -2,7 +2,6 @@ namespace DREADBORN
 {
     //UnityEngine
     using UnityEngine;
-    using UnityEngine.Rendering;
 
     public class PlayerEquipmentManager : MonoBehaviour
     {
@@ -108,15 +107,7 @@ namespace DREADBORN
             if(rightWeaponObject != null)
             {
                 rightWeaponCollider = rightWeaponObject.GetComponentInChildren<DamageCollider>();
-
-                if (manager.photonView.IsMine)
-                {
-                    SetRightWeaponDamage();
-                }
-                else
-                {
-                    Destroy(rightWeaponCollider);
-                }
+                SetRightWeaponDamage();
             }
         }
 
@@ -125,15 +116,7 @@ namespace DREADBORN
             if (leftWeaponObject != null)
             {
                 leftWeaponCollider = leftWeaponObject.GetComponentInChildren<DamageCollider>();
-
-                if (manager.photonView.IsMine)
-                {
-                    SetLeftWeaponDamage();
-                }
-                else
-                {
-                    Destroy(leftWeaponCollider);
-                }
+                SetLeftWeaponDamage();
             }
         }
         #endregion

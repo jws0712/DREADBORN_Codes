@@ -18,10 +18,10 @@ namespace DREADBORN
         {
             if(PhotonNetwork.IsMasterClient)
             {
-                //모든 플레이어가 씬을 이동하게함
-                GameManager.Instance.SetAutomaticallySyncScene(true);
+
+
                 //씬을 로드함
-                PhotonNetwork.LoadLevel(Stage1);
+                PhotonNetwork.LoadLevel(InGameScene);
             }
         }
     }

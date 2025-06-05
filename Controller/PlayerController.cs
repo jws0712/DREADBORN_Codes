@@ -125,6 +125,8 @@ namespace DREADBORN
         //플레이어 회전
         private void Spin()
         {
+            if (manager.isPause) return;
+
             //보는 방향을 카메라의 앞쪽 방향으로 설정
             Vector3 lookDir = playerCamera.transform.forward;
 

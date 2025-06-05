@@ -7,7 +7,6 @@ namespace DREADBORN
     //UnityEngine
     using UnityEngine;
     using UnityEngine.InputSystem;
-    using UnityEngine.Animations.Rigging;
     using Unity.Cinemachine;
 
 
@@ -15,7 +14,7 @@ namespace DREADBORN
     using Photon.Pun;
 
     //Project
-    using static AnimatorParameter;
+    using static AnimationClipName;
 
     public class PlayerManager : Character, IPunObservable
     {
@@ -35,6 +34,7 @@ namespace DREADBORN
         [HideInInspector] public bool isDefend = default;
         [HideInInspector] public bool isFall = default;
         [HideInInspector] public bool isAction = default;
+        [HideInInspector] public bool isPause = default;
         [HideInInspector] public bool canCombo = default;
 
         private Vector3 networkPos = default;
@@ -158,32 +158,28 @@ namespace DREADBORN
             animController = GetComponent<PlayerAnimationController>();
             thirdPersonAnim = GetComponentInChildren<Animator>();
             thirdPersonEquipmentManager = GetComponentInChildren<PlayerEquipmentManager>();
+            source = GetComponent<CinemachineImpulseSource>();
+            attackController = GetComponent<PlayerAttackController>();
+            characterController = GetComponent<CharacterController>();
+            playerController = GetComponent<PlayerController>();
+            inputManager = GetComponent<PlayerInputManager>();
 
-
-            //로컬 플레이어 일때
-            if (photonView.IsMine)
-            {
-                source = GetComponent<CinemachineImpulseSource>();
-                attackController = GetComponent<PlayerAttackController>();
-                characterController = GetComponent<CharacterController>();
-                playerController = GetComponent<PlayerController>();
-                inputManager = GetComponent<PlayerInputManager>();
-
-            }
             //리모트 플레이어 일때
-            else
+            if (!photonView.IsMine)
             {
+                //카메라 파괴
                 Destroy(aim.gameObject);
-                Destroy(playerInput);
                 Destroy(playerCamera);
+                
+                //PlayerInput 컴포넌트 삭제
+                Destroy(playerInput);
             }
         }
         
         //플레이어 부활
         public void Revive()
         {
-            animController.SetTriggerAnimation(StandUp);
-
+            animController.PlayAnimation(StandUp, true);
         }
 
         //플레이어의 상태를 사망 이전으로 돌림
@@ -202,25 +198,28 @@ namespace DREADBORN
 
             if (isDefend && currentDefendPoint > 0)
             {
-                animController.SetTriggerAnimation(DefendHit);
+                animController.PlayAnimation(DefendHit, true);
                 currentDefendPoint -= damage;
             }
             else
             {
-                animController.SetTriggerAnimation(Hit);
+                animController.PlayAnimation(Hit, true);
                 base.TakeDamage(damage);
             }
 
-            source.GenerateImpulse();
+            if(photonView.IsMine)
+            {
+                source.GenerateImpulse();
+                ui.UpdateUIValue();
+            }
 
-            ui.UpdateUIValue();
         }
 
         //사망
         [PunRPC]
         public override void Die()
         {
-            animController.SetTriggerAnimation(Dead);
+            animController.PlayAnimation(Dead, true);
             base.Die();
         }
 

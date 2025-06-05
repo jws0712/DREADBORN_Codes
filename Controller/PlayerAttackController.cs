@@ -2,6 +2,7 @@ namespace DREADBORN
 {
     //UnityEngine
     using UnityEngine;
+    using UnityEngine.EventSystems;
 
     //Project
     using static AnimationClipName;
@@ -50,7 +51,7 @@ namespace DREADBORN
         //근접 무기 공격 관리
         private void MeleeWeaponAttack()
         {
-            if (manager.Input.IsPressAttack)
+            if (manager.Input.IsPressAttack && !manager.isPause)
             {
                 //공격키를 누르고 있는 시간을 계산
                 currentMouseHoldTime += Time.deltaTime;

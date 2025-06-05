@@ -1,5 +1,5 @@
 //애니매이션 클립 이름
-public class AnimationClipName
+public static class AnimationClipName
 {
     public const string Light_Attack1 = nameof(Light_Attack1);
     public const string Light_Attack2 = nameof(Light_Attack2);
@@ -9,28 +9,26 @@ public class AnimationClipName
     public const string Heavy_Attack2 = nameof(Heavy_Attack2);
     public const string Heavy_Attack3 = nameof(Heavy_Attack3);
 
-    public const string Charge = nameof(Charge);
+    public const string Dead = nameof(Dead);
+    public const string Hit = nameof(Hit);
+    public const string DefendHit = nameof(DefendHit);
+    public const string StandUp = nameof(StandUp);
 }
 
 //애니매이터 파라메터 이름
-public class AnimatorParameter
+public static class AnimatorParameter
 {
     public const string Horizontal = nameof(Horizontal);
     public const string Vertical = nameof(Vertical);
     public const string IsCrouch = nameof(IsCrouch);
-    public const string IsCharge = nameof(IsCharge);
     public const string IsJump = nameof(IsJump);
     public const string IsGround = nameof(IsGround);
     public const string IsSprint = nameof(IsSprint);
     public const string IsDefend = nameof(IsDefend);
-    public const string Dead = nameof(Dead);
-    public const string StandUp = nameof(StandUp);
-    public const string Hit = nameof(Hit);
-    public const string DefendHit = nameof(DefendHit);
 }
 
 //씬 이름
-public class SceneName
+public static class SceneName
 {
     public const string TitleScene = nameof(TitleScene);
     public const string InGameScene = nameof(InGameScene);
@@ -39,7 +37,7 @@ public class SceneName
 }
 
 //플레이어 클래스 이름
-public class ClassName
+public static class ClassName
 {
     public const string Barbarian = nameof(Barbarian);
     public const string Knight = nameof(Knight);

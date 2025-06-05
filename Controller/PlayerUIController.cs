@@ -55,12 +55,14 @@ namespace DREADBORN
 
         }
 
-        //방에서 나오는 버튼
+        //타이틀로 돌아가는 버튼
         private void LeaveRoomButton()
         {
-            GameManager.Instance.SetAutomaticallySyncScene(false);
-            SceneManager.LoadScene(TitleScene);
+            //모든 플레이어가 씬을 같이 넘어가지 않게함
+            PhotonNetwork.AutomaticallySyncScene = false;
+
             PhotonNetwork.LeaveRoom();
+
         }
 
         //UI값 업데이트
@@ -79,6 +81,7 @@ namespace DREADBORN
             if(Input.GetKeyDown(KeyCode.Escape))
             {
                 settingPanel.SetActive(!settingPanel.activeSelf);
+                manager.isPause = settingPanel.activeSelf;
             }
         }
     }
