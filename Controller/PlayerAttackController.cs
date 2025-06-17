@@ -10,15 +10,15 @@ namespace DREADBORN
     public class PlayerAttackController : MonoBehaviour
     {
         [Header("Info")]
-        [SerializeField] private float chargeAttackTime = default;
+        [SerializeField] private float chargeAttackTime;
 
-        private float currentMouseHoldTime = default;
+        private float currentMouseHoldTime;
 
-        private string lastAttack = default;
+        private string lastAttack;
 
-        private WeaponType currentWeaponType = default;
+        private WeaponType currentWeaponType;
 
-        private PlayerManager manager = null;
+        private PlayerManager manager;
 
         //초기화
         public void Initialize()
@@ -51,8 +51,9 @@ namespace DREADBORN
         //근접 무기 공격 관리
         private void MeleeWeaponAttack()
         {
-            if (manager.Input.IsPressAttack && !manager.isPause)
+            if (manager.Input.IsPressAttack && !manager.PlayerController.IsDefend && !manager.isPause)
             {
+                Debug.Log("공격키 누름");
                 //공격키를 누르고 있는 시간을 계산
                 currentMouseHoldTime += Time.deltaTime;
             }

@@ -17,20 +17,22 @@ namespace DREADBORN
     public class PlayerUIController : MonoBehaviourPunCallbacks
     {
         [Header("Info")]
-        [SerializeField] private Canvas playerUICanvas = null;
+        [SerializeField] private Canvas playerUICanvas;
         [Space(10)]
-        [SerializeField] private Image playerIconPanel = null;
+        [SerializeField] private Image playerIconPanel;
         [Space(10)]
-        [SerializeField] private Slider hpSlider = null;
-        [SerializeField] private Slider defendPointSlider = null;
+        [SerializeField] private Slider hpSlider;
+        [SerializeField] private Slider defendPointSlider;
         [Space(10)]
-        [SerializeField] private Button leaveRoomButton = null;
+        [SerializeField] private Button leaveRoomButton;
         [Space(10)]
-        [SerializeField] private TextMeshProUGUI roomCodeText = null;
+        [SerializeField] private TextMeshProUGUI roomCodeText;
         [Space(10)]
-        [SerializeField] private GameObject settingPanel = null;
+        [SerializeField] private GameObject settingPanel;
+        [SerializeField] private GameObject interactionKeyIcon;
 
-        private PlayerManager manager = null;
+
+        private PlayerManager manager;
 
 
         //초기화
@@ -60,9 +62,7 @@ namespace DREADBORN
         {
             //모든 플레이어가 씬을 같이 넘어가지 않게함
             PhotonNetwork.AutomaticallySyncScene = false;
-
             PhotonNetwork.LeaveRoom();
-
         }
 
         //UI값 업데이트
@@ -75,6 +75,7 @@ namespace DREADBORN
             defendPointSlider.value = manager.CurrentDefendPoint / manager.MaxDefendPorint;
         }
 
+
         //셋팅 패널을 토글함
         public void ToggleSettingPanel()
         {
@@ -83,6 +84,11 @@ namespace DREADBORN
                 settingPanel.SetActive(!settingPanel.activeSelf);
                 manager.isPause = settingPanel.activeSelf;
             }
+        }
+
+        public void ToggleInteractionKeyIcon(bool trigger)
+        {
+            interactionKeyIcon.SetActive(trigger);
         }
     }
 }

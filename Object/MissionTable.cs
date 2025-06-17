@@ -11,18 +11,24 @@ namespace DREADBORN
 
 
 
-    public class MissionTable : MonoBehaviour, IInteractable
+    public class MissionTable : MonoBehaviourPun, IInteractable
     {
         //상호작용
         public void Interaction()
         {
-            if(PhotonNetwork.IsMasterClient)
-            {
+            if(PhotonNetwork.IsMasterClient) photonView.RPC("LoadStage", RpcTarget.All);
+        }
 
-
-                //씬을 로드함
-                PhotonNetwork.LoadLevel(InGameScene);
-            }
+        [PunRPC]
+        //다음 스테이지 로드
+        public void LoadStage()
+        {
+            FadeManager.Instance.FadeOut(() => {
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    GameManager.Instance.LoadScene();
+                }
+            });
         }
     }
 }

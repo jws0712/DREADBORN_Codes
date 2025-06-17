@@ -9,7 +9,7 @@ namespace DREADBORN
 
     public class ObjectPoolManager : Singleton<ObjectPoolManager>
     {
-        [SerializeField] protected PoolObjectData[] poolObjectDataArray = null;
+        [SerializeField] protected PoolObjectData[] poolObjectDataArray;
 
         protected Dictionary<string, Queue<GameObject>> poolObjectDataDictionary = new Dictionary<string, Queue<GameObject>>();
 

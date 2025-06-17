@@ -6,14 +6,14 @@ namespace DREADBORN
     public class AimController : MonoBehaviour
     {
         [Header("Info")]
-        [SerializeField] [Range(0.1f, 1f)] private float sensitivity = default;
-        [SerializeField] private float cameraDirectionLimit = default;
-        [SerializeField] private Transform moveDirection = null;
+        [SerializeField] [Range(0.1f, 1f)] private float sensitivity;
+        [SerializeField] private float cameraDirectionLimit;
+        [SerializeField] private Transform moveDirection;
 
-        private float mouseX = default;
-        private float mouseY = default;
+        private float mouseX;
+        private float mouseY;
 
-        private PlayerManager manager = null;
+        private PlayerManager manager;
 
         public Transform MoveDirection => moveDirection;
 

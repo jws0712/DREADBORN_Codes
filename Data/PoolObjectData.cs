@@ -12,8 +12,8 @@ namespace DREADBORN
     [Serializable]
     public class PoolObjectData
     {
-        public GameObject poolPrefabObject = null;
-        public int poolCount = default;
+        public GameObject poolPrefabObject;
+        public int poolCount;
         [HideInInspector] public Queue<GameObject> poolObjectContainer = new Queue<GameObject>();
     }
 }

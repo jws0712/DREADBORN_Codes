@@ -14,14 +14,14 @@ namespace DREADBORN
     public class DamageCollider : MonoBehaviour
     {
         [Header("Info")]
-        [SerializeField] private Transform capsuleStartPosition = null;
-        [SerializeField] private Transform capsuleEndPosition = null;
-        [SerializeField] private float capsuleRadius = default;
-        [SerializeField] private LayerMask hitLayer = default;
-        [SerializeField] private GameObject hitEffect = default;
+        [SerializeField] private Transform capsuleStartPosition;
+        [SerializeField] private Transform capsuleEndPosition;
+        [SerializeField] private float capsuleRadius;
+        [SerializeField] private LayerMask hitLayer;
+        [SerializeField] private GameObject hitEffect;
 
-        private bool canCheck = default;
-        private float damage = default;
+        private bool canCheck;
+        private float damage;
         public float Damage { get { return damage; } set { damage = value; } }
 
         private List<IDamageable> damagedTargets = new List<IDamageable>();

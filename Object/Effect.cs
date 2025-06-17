@@ -9,7 +9,7 @@ namespace DREADBORN
     public class Effect : MonoBehaviour
     {
         [Header("Info")]
-        [SerializeField] private float durationTime = default;
+        [SerializeField] private float durationTime;
 
         private void OnEnable()
         {

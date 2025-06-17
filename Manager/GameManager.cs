@@ -6,7 +6,6 @@ namespace DREADBORN
 
     //UnityEngine
     using UnityEngine;
-    using UnityEngine.SceneManagement;
 
     //Photon
     using Photon.Pun;
@@ -16,10 +15,11 @@ namespace DREADBORN
 
     public class GameManager : Singleton<GameManager>
     {
-        private Transform spawnTransform = null;
-        private string selectClass = null;
+        private Transform spawnTransform;
 
-        public bool isOnline = default;
+        [HideInInspector] public string selectClass;
+
+        [HideInInspector] public bool isOnline;
 
         //초기화
         public override void Awake()
@@ -33,10 +33,15 @@ namespace DREADBORN
             PhotonNetwork.AutomaticallySyncScene = true;
         }
 
-        //선택된 클래스의 이름을 받아옴
-        public void SetClass(string className)
+        //선택된 캐릭터 이름을 설정함
+        public void SetCharacter(CharacterType type)
         {
-            selectClass = className;
+            FadeManager.Instance.FadeIn();
+
+            selectClass = type.ToString();
+
+            //플레이어 소환
+            PhotonNetwork.Instantiate(selectClass, spawnTransform.position, spawnTransform.rotation);
         }
 
         //플레이어를 소환시킬 위치를 받아옴
@@ -46,18 +51,15 @@ namespace DREADBORN
         }
 
         //플레이어를 게임월드에 소환시킴
-        public void SpawnPlayer(string className = null)
+        public void SpawnPlayer()
         {
+            PhotonNetwork.Instantiate(selectClass, spawnTransform.position, spawnTransform.rotation);
+        }
 
-            if (className == null)
-            {
-                PhotonNetwork.Instantiate(selectClass, spawnTransform.position, spawnTransform.rotation);
-            }
-            else
-            {
-                PhotonNetwork.Instantiate(className, spawnTransform.position, spawnTransform.rotation);
-            }
-
+        //로딩씬을 통해 다음씬을 로드
+        public void LoadScene()
+        {
+            PhotonNetwork.LoadLevel(StageLoadingScene);
         }
     }
 }

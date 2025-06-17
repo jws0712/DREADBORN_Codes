@@ -1,62 +1,57 @@
-namespace DREADBORN
+ namespace DREADBORN
 {
     //System
+    using System;
     using System.Collections;
     using System.Collections.Generic;
 
     //Unity
     using UnityEngine;
-    using UnityEngine.InputSystem;
-    using UnityEngine.Animations.Rigging;
 
     //Cinemachine
     using Unity.Cinemachine;
 
-
     //Pun
     using Photon.Pun;
+    using EPOOutline;
 
     public class PlayerController : MonoBehaviourPun
     {
         #region variable
         [Header("Camera")]
-        [SerializeField] private CinemachineThirdPersonFollow playerCamera = null;
-        [SerializeField] private float cameraDamping = default;
+        [SerializeField] private CinemachineThirdPersonFollow playerCamera;
+        [SerializeField] private float cameraDamping;
 
         [Header("Movement")]
-        [SerializeField] private float moveSpeed = default;
-        [SerializeField] private float sprintSpeed = default;
-        [SerializeField] private float spinSpeed = default;
-        [SerializeField] private float gravity = 9.81f;
+        [SerializeField] private float moveSpeed;
+        [SerializeField] private float sprintSpeed;
+        [SerializeField] private float spinSpeed;
+        [SerializeField] private float gravity;
 
         [Header("Jump")]
-        [SerializeField] private float jumpHeight = default;
+        [SerializeField] private float jumpHeight;
 
         [Header("Crouch")]
-        [SerializeField] private float crouchSpeed = default;
-        [SerializeField] private float crouchYHeight = default;
+        [SerializeField] private float crouchSpeed;
+        [SerializeField] private float crouchYHeight;
 
         [Header("Interaction")]
-        [SerializeField] private float interactionDistance = default;
+        [SerializeField] private float interactionDistance;
+        [SerializeField] private LayerMask interactionLayer;
 
-        private float speed = default;
-        private float originYHeight = default;
-        private float originCameraDamping = default;
-        private float verticalVelocity = default;
+        private bool isDefend;
 
-        private bool isCrouch = default;
-        private bool isGrounded = default;
-        private bool isDefend = default;
+        private float speed;
+        private float originCameraDamping;
+        private float verticalVelocity;
 
-        private IInteractable interactableObject = null;
+        private PlayerManager manager;
 
-        private PlayerManager manager = null;
+        private Outlinable lastTarget;
 
-        private Vector3 moveDir = default;
+        private Vector3 moveDir;
 
         //프로퍼티
-        public bool IsCrouch => isCrouch;
-        public bool IsGrounded => isGrounded;
         public bool IsDefend => isDefend;
         #endregion
 
@@ -64,37 +59,29 @@ namespace DREADBORN
         public void Initialize()
         {
             manager = GetComponent<PlayerManager>();
-            originCameraDamping = playerCamera.Damping.z;
-            originYHeight = manager.CharacterController.height; //캐릭터 높이 초기화
-            speed = moveSpeed; //속도 초기화
+
+            originCameraDamping = playerCamera.Damping.z; //Camera Daping Z 초깃값 설정
+            speed = moveSpeed; //속도 초깃값 설정
         }
 
         #region Movement
         //이동 함수
         public void Movement()
         {
-            if(manager.IsDead)
-            {
-                moveDir = (Vector3.right * 0) + (Vector3.left * 0);
-            }
-            else
-            {
-                //이동 방향 백터를 계산
-                moveDir = (Vector3.right * manager.Input.MoveVec.x) + (Vector3.forward * manager.Input.MoveVec.y);
+            //이동 키를 받아옴
+            Vector2 moveInput = manager.Input.MoveVec;
 
-                Spin();
-                Sprint();
-            }
+            //이동 방향 계산
+            moveDir = new Vector3(moveInput.x, 0, moveInput.y);
 
-            //방향 백터를 월드 포지션으로 변환
-            moveDir = transform.TransformDirection(moveDir);
+            Spin();
+            Sprint();
 
-            //방향 벡터의 길이를 속도만큼 늘린다
-            moveDir *= speed;
+            //방향 백터를 월드 포지션으로 변환 한뒤 백터의 길이를 speed 만큼 늘림
+            moveDir = transform.TransformDirection(moveDir) * speed;
 
             //방향 백터의 y값에 중력값을 적용한다
-            moveDir.y = CalculatGravity();
-
+            moveDir.y = CalculateGravity();
 
             //계산한 이동 방향 백터를 바탕으로 이동
             manager.CharacterController.Move(moveDir * Time.deltaTime);
@@ -104,7 +91,18 @@ namespace DREADBORN
         //플레이어 달리기
         private void Sprint()
         {
-            if(manager.Input.IsPressSprint)
+            if(!manager.Input.isPressSprint)
+            {
+                ResetSprint();
+                return;
+            }
+
+            //이동하지 않거나 뒤, 양옆 이동할때 달리기 상태 초기화
+            if (moveDir == Vector3.zero || moveDir == Vector3.back || moveDir == Vector3.right || moveDir == Vector3.left)
+            {
+                ResetSprint();
+            }
+            else if(manager.CharacterController.isGrounded)
             {
                 //Camera의 Damping.z 를 설정한 값으로 교체
                 playerCamera.Damping.z = cameraDamping;
@@ -112,14 +110,16 @@ namespace DREADBORN
                 //spped 를 달리기 속도로 교체
                 speed = sprintSpeed;
             }
-            else
-            {
-                //Camera의 Damping.z 초기화
-                playerCamera.Damping.z = originCameraDamping;
+        }
 
-                //속도 초기화
-                speed = moveSpeed;
-            }
+        private void ResetSprint()
+        {
+            //Camera의 Damping.z 초기화
+            playerCamera.Damping.z = originCameraDamping;
+
+            //속도 초기화
+            speed = moveSpeed;
+            manager.Input.isPressSprint = false;
         }
 
         //플레이어 회전
@@ -142,7 +142,7 @@ namespace DREADBORN
         }
 
         //중력값 계산
-        private float CalculatGravity()
+        private float CalculateGravity()
         {
             //지상에 있을때
             if(manager.CharacterController.isGrounded)
@@ -151,7 +151,7 @@ namespace DREADBORN
                 verticalVelocity = -5f;
 
                 //플레이어 점프 액션
-                if (manager.CharacterController.isGrounded && manager.Input.isPressJump && !manager.IsDead)
+                if (manager.Input.isPressJump && !manager.IsDead)
                 {
                     //점프식
                     //v = Squrt(2gh)
@@ -159,6 +159,7 @@ namespace DREADBORN
                     //g = 중력 가속도
                     //h = 목표 높이
                     verticalVelocity = Mathf.Sqrt(2 * gravity * jumpHeight);
+
                     manager.Input.isPressJump = false;
                 }
             }
@@ -167,67 +168,70 @@ namespace DREADBORN
             {
                 //수직 속도에 중력크기 만큼 빼서 공중에서의 중력을 계산한다
                 verticalVelocity -= gravity * Time.deltaTime;
+
+                //점프키를 누르지 못하게함
+                manager.Input.isPressJump = false;
             }
 
             //계산된 수직 속도를 반환
             return verticalVelocity;
-        }
-
-        //웅크리기
-        public void Crouch()
-        {
-
-            if (manager.CharacterController.isGrounded && manager.Input.IsPressCrouch)
-            {
-                //플레이어 콜라이더의 높이를 웅크리기 상태의 높이로 교체
-                manager.CharacterController.height = crouchYHeight;
-                //속도를 웅크리기 상태 속도로 교체
-                speed = crouchSpeed;
-                isCrouch = true;
-            }
-            else
-            {
-                //플레이어 콜라이더의 높이를 원래 높이로 교체
-                manager.CharacterController.height = originYHeight;
-                //속도를 초기화
-                speed = moveSpeed;
-                isCrouch = false;
-            }
         }
         #endregion
 
         //방어
         public void Defend()
         {
-            if(manager.Input.IsPressDefend)
-            {
-                manager.isDefend = true;
-            }
-            else
-            {
-                manager.isDefend = false;
-            }
+            isDefend = manager.Input.IsPressDefend;
         }
 
         //상호작용 
         public void Interaction()
         {
-            if (manager.Input.isPressInteraction)
-            {
-                Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-                RaycastHit hitData;
+            //카메라의 앞쪽 방향으로 레이를 발사
+            Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
-                Debug.Log("상호작용");
-                if(Physics.Raycast(ray, out hitData, interactionDistance))
+            if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance))
+            {
+                if (hit.transform.TryGetComponent<IInteractable>(out IInteractable target))
                 {
-                    if (hitData.transform.TryGetComponent<IInteractable>(out interactableObject))
+                    hit.transform.TryGetComponent(out Outlinable targetObject);
+
+                    if (lastTarget != targetObject)
                     {
-                        interactableObject.Interaction();
+                        DisableOutline();
+                        //아웃라인 활성화
+                        targetObject.enabled = true;
+
+                        //상호작용 아이콘 활성화
+                        manager.UIController.ToggleInteractionKeyIcon(true);
+                        lastTarget = targetObject;
                     }
+
+                    //상호작용 키를 눌렀을때
+                    if (manager.Input.isPressInteraction)
+                    {
+                        target.Interaction();
+                        manager.Input.isPressInteraction = false;
+                    }
+                    return;
                 }
             }
+            DisableOutline();
+        }
 
-            manager.Input.isPressInteraction = false;
+
+
+        private void DisableOutline()
+        {
+            if(lastTarget != null)
+            {
+                //아웃라인 비활성화
+                lastTarget.enabled = false;
+
+                //상호작용 아이콘 비활성화
+                manager.UIController.ToggleInteractionKeyIcon(false);
+                lastTarget = null;
+            }
         }
 
         private void OnDrawGizmos()

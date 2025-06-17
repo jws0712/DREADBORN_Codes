@@ -5,7 +5,7 @@ namespace DREADBORN
 
     public class ResetAction : StateMachineBehaviour
     {
-        private PlayerManager manager = null;
+        private PlayerManager manager;
 
         //애니매이션 클립이 실행될때
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

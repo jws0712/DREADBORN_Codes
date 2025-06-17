@@ -13,11 +13,11 @@ namespace DREADBORN
     public abstract class Character : MonoBehaviourPun, IDamageable
     {
         [Header("Info")]
-        [SerializeField] protected float maxHp = default;
+        [SerializeField] protected float maxHp;
 
-        [SerializeField] protected float currentHp = default;
+        [SerializeField] protected float currentHp;
 
-        protected bool isDead = default;
+        protected bool isDead;
 
         //프로퍼티
         public bool IsDead => isDead;

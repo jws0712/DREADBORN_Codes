@@ -8,30 +8,34 @@ namespace DREADBORN
 
     //Project
     using static AnimatorParameter;
+    using Sound;
 
     public class PlayerAnimationController : MonoBehaviour
     {
         [Header("Animation")]
-        [SerializeField] private float trasitionDuration = default;
+        [SerializeField] private float trasitionDuration;
 
-        private PlayerManager manager = null;
+        [Header("Sound")]
+        [SerializeField] private AudioClip footStep;
 
-        private int animHorizontalID = default;
-        private int animVerticalID = default;
-        private int animIsCrouchID = default;
-        private int animIsJumpID = default;
-        private int animIsGroundID = default;
-        private int animIsSprintID = default;
-        private int animIsDefendID = default;
+        private PlayerManager manager;
+        private PhotonView pv;
+
+        private int animHorizontalID;
+        private int animVerticalID;
+        private int animIsJumpID;
+        private int animIsGroundID;
+        private int animIsSprintID;
+        private int animIsDefendID;
 
         //초기화 함수
         public void Initialize()
         {
-            manager = GetComponent<PlayerManager>();
+            manager = GetComponentInParent<PlayerManager>();
+            pv = GetComponentInParent<PhotonView>();
 
             animHorizontalID = Animator.StringToHash(Horizontal);
             animVerticalID = Animator.StringToHash(Vertical);
-            animIsCrouchID = Animator.StringToHash(IsCrouch);
             animIsJumpID = Animator.StringToHash(IsJump);
             animIsGroundID = Animator.StringToHash(IsGround);
             animIsSprintID = Animator.StringToHash(IsSprint);
@@ -45,18 +49,20 @@ namespace DREADBORN
             manager.ThirdPersonAnim.SetFloat(animHorizontalID, horizontal);
             manager.ThirdPersonAnim.SetFloat(animVerticalID, vertical);
 
-            //웅크리기 애니매이션 업데이트
-            manager.ThirdPersonAnim.SetBool(animIsCrouchID, manager.PlayerController.IsCrouch);
-
             //점프 애니매이션 업데이트
             manager.ThirdPersonAnim.SetBool(animIsJumpID, manager.Input.isPressJump);
             manager.ThirdPersonAnim.SetBool(animIsGroundID, manager.CharacterController.isGrounded);
 
             //달리기 애니매이션 업데이트
-            manager.ThirdPersonAnim.SetBool(animIsSprintID, manager.Input.IsPressSprint);
+            manager.ThirdPersonAnim.SetBool(animIsSprintID, manager.Input.isPressSprint);
 
             //방어 애니매이션 업데이트
             manager.ThirdPersonAnim.SetBool(animIsDefendID, manager.Input.IsPressDefend);
+        }
+
+        public void OnStep()
+        {
+            SoundManager.instance.SFXPlay("FootStep", footStep);
         }
 
         [PunRPC]
@@ -74,7 +80,7 @@ namespace DREADBORN
             if (PhotonNetwork.IsConnected)
             {
                 if(manager.photonView.IsMine)
-                manager.photonView.RPC("PlayAnimation", RpcTarget.Others, targetAnimation, isAction, isRootMotion);
+                pv.RPC("PlayAnimation", RpcTarget.Others, targetAnimation, isAction, isRootMotion);
             }
         }
     }
